@@ -1,4 +1,5 @@
 const { User } = require('../../../models')
+const InvalidCredentialException = require('../../exceptions/invalid-credential-exception')
 
 class AuthController {
     async login(req, res) {
@@ -11,10 +12,9 @@ class AuthController {
         })
 
         if (!user)
-            return res.status(403).send("Invalid credentials")
+            throw new InvalidCredentialException()
         if (password !== user.password)
-            return res.status(403).send("Invalid credentials")
-
+            throw new InvalidCredentialException()
         res.send(user)
     }
 
