@@ -1,11 +1,12 @@
 const express = require('express')
 const webRoutes = require('./web')
-const { routes } = require('./web/pages')
+const apiRoutes = require('./api')
 
 class Router {
     constructor() {
         this.router = express.Router()
         this.webRoutes = webRoutes
+        this.apiRoutes = apiRoutes
     }
 
     create(app) {
@@ -13,6 +14,7 @@ class Router {
 
         // TODO attach routes
         this._attachWebRoutes()
+        this._attachApiRoutes()
 
         // TODO handle 404 pages
         this._handlePageNotFound()
@@ -35,7 +37,7 @@ class Router {
     }
 
     _attachApiRoutes() {
-
+        this._attachRoutes(this.apiRoutes, '/api')
     }
 
     _attachRoutes(routeGroups, prefix = '') {
