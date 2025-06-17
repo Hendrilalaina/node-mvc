@@ -11,6 +11,7 @@ class Router {
 
     create(app) {
         // TODO attach middleware
+        this._attachMiddleware()
 
         // TODO attach routes
         this._attachWebRoutes()
@@ -24,6 +25,10 @@ class Router {
         // TODO register router 
 
         app.use(this.router)
+    }
+
+    _attachMiddleware() {
+        this.router.use(express.json())
     }
 
     _handlePageNotFound() {
