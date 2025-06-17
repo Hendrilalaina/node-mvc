@@ -5,19 +5,20 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     /**
      * Add seed commands here.
-     *
-     * Example:
-     * await queryInterface.bulkInsert('People', [{
-     *   name: 'John Doe',
-     *   isBetaMember: false
-     * }], {});
+    *
+    * Example:
+    * await queryInterface.bulkInsert('People', [{
+    *   name: 'John Doe',
+    *   isBetaMember: false
+    * }], {});
     */
-    await queryInterface.bulkInsert('users', [{
+   const { User } = require('../models')
+   await User.create({
       first_name: 'John',
       last_name: 'Doe',
       email: 'john.doe@example.com',
       password: 'secret'
-    }], {})
+    })
   },
 
   async down (queryInterface, Sequelize) {

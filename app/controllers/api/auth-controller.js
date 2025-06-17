@@ -1,5 +1,6 @@
 const { User } = require('../../../models')
 const InvalidCredentialException = require('../../exceptions/invalid-credential-exception')
+const bcrypt = require('bcrypt')
 
 class AuthController {
     async login(req, res) {
@@ -13,7 +14,7 @@ class AuthController {
 
         if (!user)
             throw new InvalidCredentialException()
-        if (password !== user.password)
+        if (!await bcrypt.compare(password, user.password))
             throw new InvalidCredentialException()
         res.send(user)
     }
