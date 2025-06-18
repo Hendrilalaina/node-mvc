@@ -14,8 +14,8 @@ module.exports = {
     */
    const { User } = require('../../app/models')
    await User.create({
-      first_name: 'John',
-      last_name: 'Doe',
+      firstName: 'John',
+      lastName: 'Doe',
       email: 'john.doe@example.com',
       password: 'secret'
     })

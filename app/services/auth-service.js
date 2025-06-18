@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt')
-const { appKey, tokenExpiresIn } = require('../../config/app')
 const Tokenizer = require('../modules/tokenizer')
+const { RefreshToken } = require('../models')
 
 class AuthService {
     async isPasswordMatch(attempted, original) {
@@ -8,9 +8,16 @@ class AuthService {
     }
 
     async generateTokens(payload) {
+        const refreshToken = Tokenizer.generateRefreshToken()
+
+        await RefreshToken.create({
+            token: refreshToken,
+            userId: payload.id
+        })
+        
         return {
             accessToken: Tokenizer.generateAccessToken(payload),
-            refreshToken: Tokenizer.generateRefreshToken()
+            refreshToken
         }
     }
 
