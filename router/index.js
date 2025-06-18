@@ -1,6 +1,7 @@
 const express = require('express')
 const webRoutes = require('./web')
 const apiRoutes = require('./api')
+const logger = require('../app/modules/logger')
 
 class Router {
     constructor() {
@@ -31,6 +32,8 @@ class Router {
     _handleExceptions() {
         this.router.use((err, req, res, next) => {
             err.statusCode = err.status || err.statusCode || 500
+
+            logger.error(err.message)
 
             return res.status(err.statusCode).send(err.message)
         })
