@@ -5,6 +5,14 @@ class BaseRepository {
         this.model = model
     }
 
+    async findById(id) {
+        return await this.model.findOne({
+            where: {
+                id
+            }
+        })
+    }
+
     async findBy({ column, value }) {
         const where = {}
         where[column] = value
