@@ -14,9 +14,9 @@ class AuthController {
             throw new InvalidCredentialException()
         
         const payload = {id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, }
-        const accessToken = await AuthService.generateToken(payload)
+        const tokens = await AuthService.generateTokens(payload)
 
-        res.send({ user, ...{ accessToken } })
+        res.send({ user, ...tokens })
     }
 
     async register(req, res) {
