@@ -1,7 +1,5 @@
-const { User } = require('../../models')
 const InvalidCredentialException = require('../../exceptions/invalid-credential-exception')
-const { appKey, tokenExpiresIn } = require('../../../config/app')
-const userRepository = require('../../repositories/user-repository')
+const UserRepository = require('../../repositories/user-repository')
 const AuthService = require('../../services/auth-service')
 
 class AuthController {
@@ -20,7 +18,13 @@ class AuthController {
     }
 
     async register(req, res) {
-        res.send("Register")
+        const { firstName, lastName, email, password } = req.body
+        const data = { firstName, lastName, email, password }
+        
+        const user = await UserRepository.create(data)
+        const tokens = await AuthService.generateTokens(data)
+        
+        res.send({ user, ...tokens })
     }
 }
 
