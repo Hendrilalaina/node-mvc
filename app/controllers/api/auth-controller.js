@@ -11,8 +11,6 @@ class AuthController {
 
         const user = await userRepository.findByEmail(email)
 
-        if (!user)
-            throw new InvalidCredentialException()
         if (!await bcrypt.compare(password, user.password))
             throw new InvalidCredentialException()
         
