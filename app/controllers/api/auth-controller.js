@@ -1,9 +1,8 @@
 const { User } = require('../../models')
 const InvalidCredentialException = require('../../exceptions/invalid-credential-exception')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
 const { appKey, tokenExpiresIn } = require('../../../config/app')
 const userRepository = require('../../repositories/user-repository')
+const AuthService = require('../../services/auth-service')
 
 class AuthController {
     async login(req, res) {
@@ -11,11 +10,11 @@ class AuthController {
 
         const user = await userRepository.findByEmail(email)
 
-        if (!await bcrypt.compare(password, user.password))
+        if (!AuthService.isPasswordMatch(password, user.password))
             throw new InvalidCredentialException()
         
         const payload = {id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, }
-        const accessToken = jwt.sign(payload, appKey, {expiresIn: tokenExpiresIn})
+        const accessToken = await AuthService.generateToken(payload)
 
         res.send({ user, ...{ accessToken } })
     }
