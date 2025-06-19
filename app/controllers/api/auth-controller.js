@@ -6,7 +6,7 @@ class AuthController {
     async login(req, res) {
         const { email, password } = req.body
 
-        const user = await userRepository.findByEmail(email)
+        const user = await UserRepository.findByEmail(email)
 
         if (!AuthService.isPasswordMatch(password, user.password))
             throw new InvalidCredentialException()
