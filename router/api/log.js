@@ -15,7 +15,7 @@ module.exports = {
         {
             method: 'get',
             path: '/:date',
-            handler: LogController.index
+            handler: LogController.show
         }
     ]
 }

@@ -8,7 +8,7 @@ class LogController {
     async show(req, res) {
         const { date } = req.params
 
-        res.send(await logger.getLogByDate())
+        res.send(await logger.getLogByDate(date))
     }
 }
 
