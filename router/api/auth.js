@@ -11,13 +11,13 @@ module.exports = {
             method: 'post',
             path: '/login',
             middleware: [ValidationRules.login, validate],
-            handler: AuthController.login
+            handler: AuthController.login.bind(AuthController)
         },
         {
             method: 'post',
             path: '/register',
             middleware: [ValidationRules.register, validate],
-            handler: AuthController.register
+            handler: AuthController.register.bind(AuthController)
         }
     ]
 }

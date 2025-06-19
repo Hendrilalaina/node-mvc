@@ -14,7 +14,7 @@ class AuthController {
         const payload = {id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, }
         const tokens = await AuthService.generateTokens(payload)
 
-        res.send({ user, ...tokens })
+        res.send(this._parsedResponse(user, tokens))
     }
 
     async register(req, res) {
@@ -24,8 +24,21 @@ class AuthController {
         const user = await UserRepository.create(data)
         const tokens = await AuthService.generateTokens(data)
         
-        res.send({ user, ...tokens })
+        res.send(this._parsedResponse(user, tokens))
+    }
+
+    _parsedResponse = (user, tokens ) => {
+        return {
+            user: {
+                id: user.id,
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName
+            },
+            ...tokens
+        }
     }
 }
+
 
 module.exports = new AuthController()
