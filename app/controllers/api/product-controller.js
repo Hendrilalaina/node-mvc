@@ -14,18 +14,20 @@ class ProductController {
     async create(req, res) {
         const { name } = req.body
         const files = Object.values(req.body.files)
+        
+        const buffer = files[0].buffer
+        const extension = 'jpg'
+        const filename = `${Date.now()}.${extension}`
 
         const product = await ProductRepository.create({
-            name
+            name,
+            image: filename
         })
 
         const destination = `../../../public/images/products/${product.id}`
 
         await mkdir(path.join(__dirname, destination))
 
-        const buffer = files[0].buffer
-        const extension = 'jpg'
-        const filename = `${Date.now()}.${extension}`
 
         await writeFile(path.join(__dirname, destination, filename), buffer)
 

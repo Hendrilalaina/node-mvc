@@ -2,6 +2,9 @@
 const {
   Model
 } = require('sequelize');
+
+const { appUrl, appPort } = require('../../config/app')
+
 module.exports = (sequelize, DataTypes) => {
   class Product extends Model {
     /**
@@ -15,7 +18,19 @@ module.exports = (sequelize, DataTypes) => {
   }
   Product.init({
     name: DataTypes.STRING,
-    image: DataTypes.STRING
+    image: {
+      type: DataTypes.STRING,
+      get() {
+        const filename = this.getDataValue('image')
+        const id = this.getDataValue('id')
+        const url = `${appUrl}:${appPort}`
+
+        if (filename)
+          return `${url}/images/products/${id}/${filename}`
+        
+        return null
+      }
+    }
   }, {
     sequelize,
     modelName: 'Product',
