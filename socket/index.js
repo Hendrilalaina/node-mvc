@@ -1,7 +1,10 @@
 const ws = require('ws')
+const jwt = require('jsonwebtoken')
 const Tokenizer = require('../app/modules/tokenizer')
+const { appKey } = require('../config/app')
 
-const sockets = []
+const sockets = new Map()
+const users = new Map()
 
 class WebSocket {
     constructor(server) {
@@ -26,24 +29,57 @@ class WebSocket {
     }
 
     _handleUpgrade() {
-        this.server.on('upgrade', (request, socket, head) => {
+        this.server.on('upgrade', async (request, socket, head) => {
             const id = Tokenizer.generateRandomToken()
+            const token = request.headers['sec-websocket-protocol']
 
-            this.ws.handleUpgrade(request, socket, head, (socket) => {
-                socket.id = id
-                sockets.push(socket)
+            if (token) {
+                await jwt.verify(token, appKey, (err, user) => {
+                    if (err) {
+                        socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n')
+                        return socket.destroy()
+                    }
 
-                this.ws.emit('connection', socket)
-            })
+                    this.ws.handleUpgrade(request, socket, head, (socket) => {
+                        socket.id = id
+                        
+                        if (users.has(user.id)) {
+                            const existingUser = users.get(user.id)
+                            existingUser.sockets = [...existingUser.sockets, ...[socket]]
+                            sockets.set(id, user.id)
+                        } else {
+                            users.set(user.id, {
+                                id: user.id,
+                                firstName: user.firstName,
+                                sockets: [socket]
+                            })
+                        }
+        
+                        this.ws.emit('connection', socket)
+                    })
+                })
+            } else {
+                socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n')
+                return socket.destroy()
+            }
+
 
         })
     }
 
     startListening() {
         this.ws.on('connection', (socket) => {
+            const userJoined = users.get(sockets.get(socket.id))
+            if (userJoined) {
+                for (const client of this.ws.clients) {
+                    if (client !== socket)
+                        client.send(`User ${userJoined.firstName} joined!`)
+                }
+            }
+
             socket.on('message', (message) => {
-                for (const socket of sockets) {
-                    socket.send(message)
+                for (const client of this.ws.clients) {
+                    client.send(message)
                 }
             })
 
