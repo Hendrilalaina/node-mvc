@@ -42,7 +42,7 @@ class WebSocket {
 
                     this.ws.handleUpgrade(request, socket, head, (socket) => {
                         socket.id = id
-                        
+
                         if (users.has(user.id)) {
                             const existingUser = users.get(user.id)
                             existingUser.sockets = [...existingUser.sockets, ...[socket]]
@@ -86,6 +86,22 @@ class WebSocket {
             socket.on('pong', () => {
                 console.log('pong')
                 socket.isAlive = true
+            })
+
+            socket.on('close', () => {
+                const user = users.get(sockets.get(socket.id))
+
+                if (user.sockets.length > 1) {
+                    user.sockets = user.sockets.filter((sock) => {
+                        if (sock.id !== socket.id) return true
+                        sockets.delete(socket.id)
+                        return false
+                    })
+                    users.set(user.id, user)
+                } else {
+                    sockets.delete(socket.id)
+                    users.delete(user.id)
+                }
             })
         })
     }
