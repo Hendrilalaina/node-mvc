@@ -12,6 +12,10 @@ class Tokenizer {
     }
 
     generateRefreshToken(length = 64) {
+        return this.generateRandomToken(length)
+    }
+    
+    generateRandomToken(length = 64) { 
         return crypto.randomBytes(length).toString('hex')
     }
 }
