@@ -8,7 +8,21 @@ class WebSocket {
         this.server = server
         this.ws = new ws.Server({ 'noServer': true })
 
+        this._ping()
         this._handleUpgrade()
+    }
+
+    _ping() {
+        setInterval(() => {
+            console.log('clients: ', this.ws.clients.size)
+
+            for (const client of this.ws.clients) {
+                if (client.isAlive === false) return client.terminate()
+
+                client.isAlive = false
+                client.ping()
+            }
+        }, 2000)
     }
 
     _handleUpgrade() {
@@ -31,6 +45,11 @@ class WebSocket {
                 for (const socket of sockets) {
                     socket.send(message)
                 }
+            })
+
+            socket.on('pong', () => {
+                console.log('pong')
+                socket.isAlive = true
             })
         })
     }
